@@ -16,16 +16,16 @@ class ManiaExchange_Post_Type
     {
         register_post_type('maps', array(
             'labels' => array(
-                'name' => __('Maps', 'maniaexchange'),
-                'singular_name' => __('Map', 'maniaexchange'),
-                'add_new' => __('Add New Map', 'maniaexchange'),
-                'add_new_item' => __('Add New Map', 'maniaexchange'),
-                'edit_item' => __('Edit Map', 'maniaexchange'),
-                'new_item' => __('New Map', 'maniaexchange'),
-                'view_item' => __('View Map', 'maniaexchange'),
-                'search_items' => __('Search Maps', 'maniaexchange'),
-                'not_found' => __('No Maps found', 'maniaexchange'),
-                'not_found_in_trash' => __('No Maps found in Trash', 'maniaexchange'),
+                'name' => __('Maps', 'maniaexchange-integration'),
+                'singular_name' => __('Map', 'maniaexchange-integration'),
+                'add_new' => __('Add New Map', 'maniaexchange-integration'),
+                'add_new_item' => __('Add New Map', 'maniaexchange-integration'),
+                'edit_item' => __('Edit Map', 'maniaexchange-integration'),
+                'new_item' => __('New Map', 'maniaexchange-integration'),
+                'view_item' => __('View Map', 'maniaexchange-integration'),
+                'search_items' => __('Search Maps', 'maniaexchange-integration'),
+                'not_found' => __('No Maps found', 'maniaexchange-integration'),
+                'not_found_in_trash' => __('No Maps found in Trash', 'maniaexchange-integration'),
             ),
             'public' => true,
             'has_archive' => true,
@@ -58,14 +58,14 @@ class ManiaExchange_Post_Type
 
         register_taxonomy('map_tags', 'maps', array(
             'labels' => array(
-                'name' => __('Tags', 'maniaexchange'),
-                'singular_name' => __('Tag', 'maniaexchange'),
-                'search_items' => __('Search Tags', 'maniaexchange'),
-                'all_items' => __('All Tags', 'maniaexchange'),
-                'edit_item' => __('Edit Tag', 'maniaexchange'),
-                'update_item' => __('Update Tag', 'maniaexchange'),
-                'add_new_item' => __('Add New Tag', 'maniaexchange'),
-                'new_item_name' => __('New Tag Name', 'maniaexchange'),
+                'name' => __('Tags', 'maniaexchange-integration'),
+                'singular_name' => __('Tag', 'maniaexchange-integration'),
+                'search_items' => __('Search Tags', 'maniaexchange-integration'),
+                'all_items' => __('All Tags', 'maniaexchange-integration'),
+                'edit_item' => __('Edit Tag', 'maniaexchange-integration'),
+                'update_item' => __('Update Tag', 'maniaexchange-integration'),
+                'add_new_item' => __('Add New Tag', 'maniaexchange-integration'),
+                'new_item_name' => __('New Tag Name', 'maniaexchange-integration'),
             ),
             'hierarchical' => false,
             'show_ui' => true,
@@ -78,14 +78,14 @@ class ManiaExchange_Post_Type
     {
         register_meta('post', 'tm_Username', array(
             'type' => 'string',
-            'description' => __('The username of the map author', 'maniaexchange'),
+            'description' => __('The username of the map author', 'maniaexchange-integration'),
             'single' => true,
             'show_in_rest' => true,
         ));
 
         register_meta('post', 'tm_AuthorTime', array(
             'type' => 'integer',
-            'description' => __('The author time of the map', 'maniaexchange'),
+            'description' => __('The author time of the map', 'maniaexchange-integration'),
             'single' => true,
             'show_in_rest' => true,
         ));

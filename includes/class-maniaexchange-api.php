@@ -13,7 +13,7 @@ class ManiaExchange_API
         }
 
         if (empty($_POST['track_id'])) {
-            self::display_admin_error(__('Track ID is required.', 'maniaexchange'));
+            self::display_admin_error(__('Track ID is required.', 'maniaexchange-integration'));
             return;
         }
 
@@ -23,14 +23,14 @@ class ManiaExchange_API
         $response = wp_remote_get($api_url);
 
         if (is_wp_error($response)) {
-            self::display_admin_error(__('Failed to fetch data from the API: ', 'maniaexchange') . $response->get_error_message());
+            self::display_admin_error(__('Failed to fetch data from the API: ', 'maniaexchange-integration') . $response->get_error_message());
             return;
         }
 
         $data = json_decode(wp_remote_retrieve_body($response), true);
 
         if (empty($data) || isset($data['error'])) {
-            self::display_admin_error(__('Invalid response from the API.', 'maniaexchange'));
+            self::display_admin_error(__('Invalid response from the API.', 'maniaexchange-integration'));
             return;
         }
 
@@ -42,7 +42,7 @@ class ManiaExchange_API
         ));
 
         if (is_wp_error($post_id)) {
-            self::display_admin_error(__('Failed to create the map post.', 'maniaexchange'));
+            self::display_admin_error(__('Failed to create the map post.', 'maniaexchange-integration'));
             return;
         }
 
@@ -75,7 +75,7 @@ class ManiaExchange_API
         // Download and set the map image as the featured image
         self::set_map_featured_image($post_id, $track_id);
 
-        echo '<p style="color: green;">' . __('Map created successfully!', 'maniaexchange') . '</p>';
+        echo '<p style="color: green;">' . __('Map created successfully!', 'maniaexchange-integration') . '</p>';
     }
 
     public static function fetch_and_save_tags()
@@ -88,14 +88,14 @@ class ManiaExchange_API
         $response = wp_remote_get($api_url);
 
         if (is_wp_error($response)) {
-            self::display_admin_error(__('Failed to fetch tags from the API: ', 'maniaexchange') . $response->get_error_message());
+            self::display_admin_error(__('Failed to fetch tags from the API: ', 'maniaexchange-integration') . $response->get_error_message());
             return;
         }
 
         $tags = json_decode(wp_remote_retrieve_body($response), true);
 
         if (empty($tags) || !is_array($tags)) {
-            self::display_admin_error(__('Invalid response from the API.', 'maniaexchange'));
+            self::display_admin_error(__('Invalid response from the API.', 'maniaexchange-integration'));
             return;
         }
 
@@ -109,7 +109,7 @@ class ManiaExchange_API
             }
         }
 
-        echo '<p style="color: green;">' . __('Tags fetched and saved successfully!', 'maniaexchange') . '</p>';
+        echo '<p style="color: green;">' . __('Tags fetched and saved successfully!', 'maniaexchange-integration') . '</p>';
     }
 
     private static function display_admin_error($message)
