@@ -13,7 +13,7 @@ class ManiaExchange_API
         }
 
         if (empty($_POST['track_id'])) {
-            echo '<p style="color: red;">' . __('Track ID is required.', 'maniaexchange') . '</p>';
+            self::display_admin_error(__('Track ID is required.', 'maniaexchange'));
             return;
         }
 
@@ -23,23 +23,30 @@ class ManiaExchange_API
         $response = wp_remote_get($api_url);
 
         if (is_wp_error($response)) {
-            echo '<p style="color: red;">' . __('Failed to fetch data from the API.', 'maniaexchange') . '</p>';
+            self::display_admin_error(__('Failed to fetch data from the API: ', 'maniaexchange') . $response->get_error_message());
             return;
         }
 
         $data = json_decode(wp_remote_retrieve_body($response), true);
 
         if (empty($data) || isset($data['error'])) {
-            echo '<p style="color: red;">' . __('Invalid response from the API.', 'maniaexchange') . '</p>';
+            self::display_admin_error(__('Invalid response from the API.', 'maniaexchange'));
             return;
         }
 
+        // Create a new "Maps" post
         $post_id = wp_insert_post(array(
             'post_title' => $data['Name'] . ' by ' . $data['Username'],
             'post_type' => 'maps',
             'post_status' => 'publish',
         ));
 
+        if (is_wp_error($post_id)) {
+            self::display_admin_error(__('Failed to create the map post.', 'maniaexchange'));
+            return;
+        }
+
+        // Save tags
         if (!empty($data['Tags'])) {
             $tag_ids = explode(',', $data['Tags']);
             $tag_names = array();
@@ -56,6 +63,18 @@ class ManiaExchange_API
             }
         }
 
+        // Save additional meta fields
+        if (isset($data['AuthorTime'])) {
+            update_post_meta($post_id, 'tm_AuthorTime', $data['AuthorTime']);
+        }
+
+        if (isset($data['Username'])) {
+            update_post_meta($post_id, 'tm_Username', $data['Username']);
+        }
+
+        // Download and set the map image as the featured image
+        self::set_map_featured_image($post_id, $track_id);
+
         echo '<p style="color: green;">' . __('Map created successfully!', 'maniaexchange') . '</p>';
     }
 
@@ -69,14 +88,14 @@ class ManiaExchange_API
         $response = wp_remote_get($api_url);
 
         if (is_wp_error($response)) {
-            echo '<p style="color: red;">' . __('Failed to fetch tags from the API.', 'maniaexchange') . '</p>';
+            self::display_admin_error(__('Failed to fetch tags from the API: ', 'maniaexchange') . $response->get_error_message());
             return;
         }
 
         $tags = json_decode(wp_remote_retrieve_body($response), true);
 
         if (empty($tags) || !is_array($tags)) {
-            echo '<p style="color: red;">' . __('Invalid response from the API.', 'maniaexchange') . '</p>';
+            self::display_admin_error(__('Invalid response from the API.', 'maniaexchange'));
             return;
         }
 
@@ -91,5 +110,47 @@ class ManiaExchange_API
         }
 
         echo '<p style="color: green;">' . __('Tags fetched and saved successfully!', 'maniaexchange') . '</p>';
+    }
+
+    private static function display_admin_error($message)
+    {
+        echo '<div class="notice notice-error"><p>' . esc_html($message) . '</p></div>';
+    }
+
+    private static function set_map_featured_image($post_id, $track_id)
+    {
+        $image_url = "https://trackmania.exchange/mapimage/{$track_id}";
+        $upload_dir = wp_upload_dir();
+
+        // Download the image
+        $image_data = wp_remote_get($image_url);
+
+        if (is_wp_error($image_data)) {
+            return; // Exit if the image download fails
+        }
+
+        $image_data = wp_remote_retrieve_body($image_data);
+        $filename = "map_{$track_id}.jpg";
+
+        // Save the image to the uploads directory
+        $file_path = $upload_dir['path'] . '/' . $filename;
+        file_put_contents($file_path, $image_data);
+
+        // Add the image to the WordPress media library
+        $attachment_id = wp_insert_attachment(array(
+            'guid' => $upload_dir['url'] . '/' . $filename,
+            'post_mime_type' => 'image/jpeg',
+            'post_title' => sanitize_file_name($filename),
+            'post_content' => '',
+            'post_status' => 'inherit',
+        ), $file_path, $post_id);
+
+        // Generate attachment metadata and update the attachment
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+        $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $file_path);
+        wp_update_attachment_metadata($attachment_id, $attachment_metadata);
+
+        // Set the image as the featured image for the post
+        set_post_thumbnail($post_id, $attachment_id);
     }
 }

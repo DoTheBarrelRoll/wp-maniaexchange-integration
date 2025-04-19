@@ -9,6 +9,7 @@ class ManiaExchange_Post_Type
     public function __construct()
     {
         add_action('init', [$this, 'register_post_type']);
+        add_action('init', [$this, 'register_meta_fields']);
     }
 
     public function register_post_type()
@@ -70,6 +71,23 @@ class ManiaExchange_Post_Type
             'show_ui' => true,
             'show_in_rest' => true,
             'rewrite' => array('slug' => 'map-tags'),
+        ));
+    }
+
+    public function register_meta_fields()
+    {
+        register_meta('post', 'tm_Username', array(
+            'type' => 'string',
+            'description' => __('The username of the map author', 'maniaexchange'),
+            'single' => true,
+            'show_in_rest' => true,
+        ));
+
+        register_meta('post', 'tm_AuthorTime', array(
+            'type' => 'integer',
+            'description' => __('The author time of the map', 'maniaexchange'),
+            'single' => true,
+            'show_in_rest' => true,
         ));
     }
 }
